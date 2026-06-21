@@ -21,14 +21,13 @@ b = 1.0
 
 
 def sigmoid(z):
-    return 1 / (1 + math.exp(-z))
-
-
-def activation(z):
-    if sigmoid(z) <= 0.5:
-        return 0
+    if z >= 0:
+        return 1 / (1 + math.exp(-z))
     else:
-        return 1
+        ez = math.exp(z)
+        return ez / (1 + ez)
+
+
 
 
 def train(epoch, X, w, y, b, eta):
@@ -42,21 +41,32 @@ def train(epoch, X, w, y, b, eta):
             for c in range(len(w)):
                 s += X[row][c] * w[c]
 
-            prediction = activation(s)
-            error = y[row] - prediction
+            prediction = sigmoid(s)
+            error = prediction - y[row]
 
-            if error != 0:
-                
-                for c in range(len(w)):
-                    dldw=2*error*X[row][c]
-                    w[c] -= eta * dldw
+            for c in range(len(w)):
+                w[c] -= eta * error * X[row][c]
 
-                b += eta * error
+            b -= eta * error
 
     return w, b
+def predict(x):
+    s = b
+
+    for c in range(len(w)):
+        s += x[c] * w[c]
+    if sigmoid(s)>0.5:
+        print("Diabetes Predection:Diabetes ")
+    else :
+        print("Diabetes predection:safe")
+
+    
 
 
-w, b = train(1000, X, w, y, b, 0.1)
+w, b = train(100, X, w, y, b, 0.01)
 
 print("Optimum weights:", w)
 print("Optimum bias:", b)
+
+predict(X[0]);
+
